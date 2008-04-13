@@ -14,14 +14,20 @@ module NavigationHelper
   SUBTITLES = {}
 	
   module Error
-    class InvalidSections < RuntimeError 
-      def self.message; "#{self.to_s}: Must pass an array of sections"; end
+    class CustomError < RuntimeError
+      # getter/setter for setting custom error messages
+  	  def self.message(msg=nil);  msg.nil? ? @message : self.message = msg; end
+  	  def self.message=(msg);     @message = msg;                           end
     end
-    class InvalidArrayCount < RuntimeError
-      def self.message; "#{self.to_s}: If using subtitles, must have 1-1 match for each section/subtitle (note: use '' if a subtitle is blank)"; end
+    
+    class InvalidSections < CustomError 
+      message "#{self.to_s}: Must pass an array of sections"
     end
-    class InvalidType < RuntimeError
-      def self.message; "#{self.to_s}: Must use symbols for sections, not strings (only use strings for subtitles)"; end
+    class InvalidArrayCount < CustomError
+      message "#{self.to_s}: If using subtitles, must have 1-1 match for each section/subtitle (note: use '' if a subtitle is blank)"
+    end
+    class InvalidType < CustomError
+      message "#{self.to_s}: Must use symbols for sections, not strings (only use strings for subtitles)"
     end
   end
 	
