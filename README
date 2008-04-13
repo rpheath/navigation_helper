@@ -21,11 +21,11 @@ current tab. But sometimes that's not always feasible, which is where
 the <tt>current_tab</tt> method comes into play (see Example 7). The plugin also provides
 a means to add hover text and subtitles to the links, if need be.
 
-== Installation
+== Get it at GitHub
 
-You can install this plugin by issuing the command:
+This repository is public on GitHub:
 
-  ruby script/plugin install http://svn.rpheath.com/code/plugins/navigation_helper
+  git clone git://github.com/rpheath/navigation_helper.git
 
 == Assumptions (er, Conventions)
 

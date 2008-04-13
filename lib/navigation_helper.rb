@@ -3,10 +3,10 @@
 # the current tab or section, and returns an unordered list of links for easy
 # styling in CSS.
 # 
-# == Installation
-# You can install this plugin by issuing the following command:
+# == Get it at GitHub
+# This repository is public on GitHub:
 #
-#  ruby script/install plugin http://svn.rpheath.com/code/plugins/navigation_helper
+#  git clone git://github.com/rpheath/navigation_helper.git
 #
 # == Examples
 # see the README for more details and a full list of example usage
