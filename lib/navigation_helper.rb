@@ -87,7 +87,7 @@ module NavigationHelper
       authorize_all?(methods) ? sections : methods
     end
 		
-    private
+    protected
       # distinguishes between sections and subtitles, returning sections
       def parse(sections)
         temp = []
@@ -96,7 +96,21 @@ module NavigationHelper
         end
         temp
       end
-		  
+      
+      # ensures that the links passed in are valid
+      def validate_sections!
+        raise(InvalidSections, InvalidSections.message) unless sections_is_an_array?
+        if has_subtitles?
+          raise(InvalidArrayCount, InvalidArrayCount.message) unless one_to_one_match_for_sections_and_subtitles?
+        end
+        raise(InvalidType, InvalidType.message) unless valid_types?
+      end
+      
+    private
+      ##################################################################################
+      # CONVENIENCE METHODS BELOW                                                      #
+      ##################################################################################
+      
       # loads the SUBTITLES constant with key/value relationships for section/subtitle
       def fill_subtitles
         @sections.in_groups_of(2) { |group| SUBTITLES[group[0]] = group[1] }
@@ -114,14 +128,6 @@ module NavigationHelper
       def authorize_all?(methods)
         return false if methods.blank?
         methods.size == 1 && methods[0] == :all
-      end
-
-      def validate_sections!
-        raise(InvalidSections, InvalidSections.message) unless sections_is_an_array?
-        if has_subtitles?
-          raise(InvalidArrayCount, InvalidArrayCount.message) unless one_to_one_match_for_sections_and_subtitles?
-        end
-        raise(InvalidType, InvalidType.message) unless valid_types?
       end
       
       def sections_is_an_array?
