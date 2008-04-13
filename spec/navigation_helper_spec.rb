@@ -140,6 +140,20 @@ describe "NavigationHelper Plugin: Navigation class" do
         nav.methods_to_authorize.should eql(@links)
       end
       
+      it "should have an authorized CSS class" do
+        nav = nav_without_subtitles(:authorize => [:all])
+        nav.authorized_css.should eql('authorized_nav_link')
+      end
+      
+      it "should support a custom authorized CSS class" do
+        nav = nav_without_subtitles(:authorize => [:all], :authorized_css => 'something_else')
+        nav.authorized_css.should eql('something_else')
+      end
+      
+      it "should not have an authorized CSS class if no links are to be authorized" do
+        nav_without_subtitles.authorized_css.should be_empty
+      end
+      
       it "should have a authorization method default of 'logged_in?'" do
         nav_without_subtitles.authorization_method.should_not be_nil
         nav_without_subtitles.authorization_method.should eql(:logged_in?)

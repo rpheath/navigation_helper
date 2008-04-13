@@ -86,6 +86,12 @@ module NavigationHelper
       end
       authorize_all?(methods) ? sections : methods
     end
+    
+    # returns the additional CSS class to be set on all authorized links
+    def authorized_css
+      return '' if methods_to_authorize.blank?
+      @options[:authorized_css] ||= 'authorized_nav_link'
+    end
 		
     protected
       # distinguishes between sections and subtitles, returning sections
@@ -171,11 +177,11 @@ module NavigationHelper
       items = []
       navigation.sections.each do |link|
         current_tab = controller.class.instance_variable_get("@current_tab") || controller.controller_name.to_sym
-        css = (link == current_tab ? 'current' : '')
+        css = (link == current_tab ? 'current' : nil)
         if navigation.methods_to_authorize.include?(link)
-          items << content_tag(:li, construct(navigation, link), :class => css + ' authorized_nav_link') if authorized?(navigation)
+          items << content_tag(:li, construct(navigation, link), :class => [css, navigation.authorized_css].compact.join(' ')) if authorized?(navigation)
         else
-          items << content_tag(:li, construct(navigation, link), :class => css)
+          items << content_tag(:li, construct(navigation, link), :class => css.to_s)
         end
       end	
       items.blank? ? '' : content_tag(:ul, items, :class => 'nav_bar')
