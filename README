@@ -1,0 +1,210 @@
+= Navigation Helper
+
+Web applications always use navigation. And the majority of the apps built 
+enjoy keeping track of the current tab (or link or section or whatever). This
+plugin attempts to aid that process a bit.
+
+You get two methods with this plugin:
+
+* <tt>navigation([], {})</tt> - used in the view to render the links in (X)HTML form
+* <tt>current_tab(:tab_name)</tt> - used in any controller to override the current tab for that controller
+
+Configuration Options:
+* +authorize+ - specifies which of the sections require authorization before showing up
+  (note: use <tt>:authorize => [:all]</tt> if all sections require authorization... i.e, an admin menu)
+* +with+ - specifies the method to use to authorize against (defaults to <tt>logged_in?</tt> method...
+  Note - requires the <tt>authorize</tt> option to work)
+* +hover_text+ - specifies to use the subtitles as hovertext instead of showing up as span's under the links
+	
+By default, the <tt>navigation</tt> method will use the controller name to set the
+current tab. But sometimes that's not always feasible, which is where
+the <tt>current_tab</tt> method comes into play (see Example 7). The plugin also provides
+a means to add hover text and subtitles to the links, if need be.
+
+== Installation
+
+You can install this plugin by issuing the command:
+
+  ruby script/plugin install http://svn.rpheath.com/code/plugins/navigation_helper
+
+== Assumptions (er, Conventions)
+
+=== Use Symbols for Sections
+
+You cannot pass strings to the <tt>navigation</tt> helper and expect it to work properly. Meaning:
+
+  # incorrect
+  navigation ['home','about','contact_me']
+
+  # correct
+  navigation [:home, :about, :contact_me]
+
+This is because of the subtitles. The plugin understands strings and symbols differently, so just make
+sure you're using symbols for the sections, and strings for the subtitles (if you want subtitles, that is).
+
+=== Subtitles Must Follow Respective Section
+
+If you choose to use subtitles, just make sure you keep them "grouped" together in their respective pairs.
+
+  navigation([
+    :home,    'Start Here',
+    :about,   'Learn More',
+    :contact, 'Get In Touch'
+  ])
+
+=== Named Routes matching Sections
+
+One thing to make note of is each symbolized link you pass to the navigation
+helper, expects to have a matched named route. So, for instance:
+
+  # calling this
+  navigation [:home, :about, :contact_me]
+
+  # would expect these named routes to exist
+  home_path
+  about_path
+  contact_me_path
+
+And by default, an "underscored" link will result in capitalized words. So <tt>:contact_me</tt> would
+result in 'Contact Me' link text. If you wish to have all lowercase or all uppercase, just use CSS to do that.
+
+The examples below provide some help on how to use this plugin.
+
+== Example Usage
+
+There are several different ways you can use the <tt>navigation</tt> helper. 
+
+=== Example 1
+
+The most basic usage...
+
+  navigation [:home, :about, :contact]
+
+...which will render...
+  
+  <ul class="nav_bar">
+    <li class="current"><a href="/home">Home</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+
+The above example assumes that the user is actually on the home page (hence
+the "current" css class on the Home list item).
+
+=== Example 2
+
+Sometimes you need tabs to show up only based on some condition (such as a user
+being logged in). Picture a blog application. A Blog may have public tabs (such as Home, About, etc),
+but a logged in admin may want another tab to easily get to the admin interface.
+You can specify this behavior in the navigation helper by passing an array of links 
+to the <tt>:authorize</tt> option...
+
+  navigation [:home, :about, :contact, :admin], :authorize => [:admin]
+
+Now, based on that setup, the "Admin" tab will require authorization before showing up.
+
+=== Example 3
+
+By default, this plugin will check against a <tt>logged_in?</tt> method to ensure an authorized user. 
+However, if you already have a custom method you're using to limit access and don't want to call it
+<tt>logged_in?</tt>, you can specify that by passing the method to use using the <tt>:with</tt>
+option:
+
+  navigation [:home, :about, :contact, :admin], :authorize => [:admin], :with => :authorize_first
+
+Now the plugin will check against an <tt>authorize_first</tt> method instead of
+<tt>logged_in?</tt>.
+
+Just for completeness, you can specify multiple links to be "authorized".
+
+  navigation [:home, :about, :users, :reports], :authorize => [:users, :reports]
+
+=== Example 4
+
+Now, let's say you want to use the navigation helper for an entire section of admin links 
+(read: call the authorize method for every link), maybe to show up in an admin sidebar or something. 
+Well, we don't want to have to repeat all of those links in the <tt>:authorize</tt> option, 
+so you can pass a single value of <tt>:all</tt> to show/hide the entire menu based on an authorized method:
+
+  navigation [:dashboard, :users, :reports], :authorize => [:all]
+
+Again, by default that will look for a <tt>logged_in?</tt> method, but you can override
+that by passing your own (as shown above) using the <tt>:with</tt> option. The navigation 
+helper will return nothing if the authorization doesn't pass.
+
+=== Example 5
+
+Now, sometimes I want to place a subtitle under my links. Maybe a brief description or
+something. This plugin also supports that by passing the link followed by its subtitle, like so:
+  
+  navigation [:home, 'Start Here', :about, 'Learn More']
+
+This would render:
+
+  <ul class="nav_bar">
+    <li class="current">
+      <a href="/home">Home</a>
+      <span>Start Here</span>
+    </li>
+    <li>
+      <a href="/about">About</a>
+      <span>Learn More</span>
+    </li>
+  </ul>
+
+The CSS is up to you, but the markup is definitely flexible enough for some nice handywork.
+
+=== Example 6
+
+Maybe you want your subtitles to be a little less obtrusive and not actually show up as markup.
+By setting the <tt>:hover_text</tt> option to <tt>true</tt>, the subtitles will then
+become hover text on the links. Redoing the above example with hover text, we get:
+
+  navigation [:home, 'Start Here', :about, 'Learn More'], :hover_text => true
+
+Notice the <tt>:hover_text => true</tt> option. This would render...
+
+  <ul class="nav_bar">
+    <li class="current">
+      <a href="/home" title="Start Here">Home</a>
+    </li>
+    <li>
+      <a href="/about" title="Learn More">About</a>
+    </li>
+  </ul>
+
+The span's get replaced with link title's instead.	
+
+=== Example 7
+
+By default this plugin will use the name of the current controller to
+determine the current tab. But what if you don't want to name your controllers in the context
+of your navigation, and vice versa (which is a very practical need)? No problem.
+
+Let's say you have the following controllers:
+
+  def PublicController < ApplicationController
+  end
+	
+  def AboutController < ApplicationController
+  end
+	
+  def ContactController < ApplicationController
+  end
+	
+And you wanted your navigation links to be setup like so:
+
+  <%= navigation [:home, :about, :contact] -%>
+
+According to how the <tt>navigation</tt> helper works, you would have to replace <tt>:home</tt>
+with <tt>:public</tt>. But that would be confusing. This is where the current_tab method comes into play. Just
+do this to associate a controller with a tab:
+
+  def PublicController < ApplicationController
+    current_tab :home
+  end
+
+And you're set. Now whenever you're on any action within the PublicController, the navigation helper
+will match the current tab up against :home instead of :public.
+
+Copyright (c) 2008 Ryan Heath (http://rpheath.com), released under the MIT license
