@@ -13,15 +13,15 @@
 module NavigationHelper
   SUBTITLES = {}
 	
-  module Errors
+  module Error
     class InvalidSections < RuntimeError 
-      def message; "#{self.class}: Must pass an array of sections"; end
+      def self.message; "#{self.to_s}: Must pass an array of sections"; end
     end
     class InvalidArrayCount < RuntimeError
-      def message; "#{self.class}: If using subtitles, must have 1-1 match for each section/subtitle (note: use '' if a subtitle is blank)"; end
+      def self.message; "#{self.to_s}: If using subtitles, must have 1-1 match for each section/subtitle (note: use '' if a subtitle is blank)"; end
     end
     class InvalidType < RuntimeError
-      def message; "#{self.class}: Must use symbols for sections, not strings (only use strings for subtitles)"; end
+      def self.message; "#{self.to_s}: Must use symbols for sections, not strings (only use strings for subtitles)"; end
     end
   end
 	
@@ -30,12 +30,12 @@ module NavigationHelper
   # If you need to extend the functionality, add methods to the Navigation class as
   # the navigation helper generates a new instance of this class
   class Navigation	
-    include Errors
+    include Error
   
     def initialize(sections, options)
       @sections = sections
       @options = options
-      validate_sections
+      validate_sections!
       fill_subtitles if has_subtitles?
     end
 		
@@ -110,12 +110,12 @@ module NavigationHelper
         methods.size == 1 && methods[0] == :all
       end
 
-      def validate_sections
-        raise(InvalidSections, InvalidSections.new.message) unless sections_is_an_array?
+      def validate_sections!
+        raise(InvalidSections, InvalidSections.message) unless sections_is_an_array?
         if has_subtitles?
-          raise(InvalidArrayCount, InvalidArrayCount.new.message) unless one_to_one_match_for_sections_and_subtitles?
+          raise(InvalidArrayCount, InvalidArrayCount.message) unless one_to_one_match_for_sections_and_subtitles?
         end
-        raise(InvalidType, InvalidType.new.message) unless valid_types?
+        raise(InvalidType, InvalidType.message) unless valid_types?
       end
       
       def sections_is_an_array?
