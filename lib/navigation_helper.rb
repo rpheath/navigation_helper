@@ -3,11 +3,6 @@
 # the current tab or section, and returns an unordered list of links for easy
 # styling in CSS.
 # 
-# == Installation
-# You can install this plugin by issuing the following command:
-#
-#  ruby script/install plugin http://svn.rpheath.com/code/plugins/navigation_helper
-#
 # == Examples
 # see the README for more details and a full list of example usage
 module NavigationHelper
