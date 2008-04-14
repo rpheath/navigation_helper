@@ -112,11 +112,7 @@ module NavigationHelper
         raise(InvalidType, InvalidType.message) unless valid_types?
       end
       
-    private
-      ##################################################################################
-      # CONVENIENCE METHODS BELOW                                                      #
-      ##################################################################################
-      
+    private      
       # loads the SUBTITLES constant with key/value relationships for section/subtitle
       def fill_subtitles
         @sections.in_groups_of(2) { |group| SUBTITLES[group[0]] = group[1] }
