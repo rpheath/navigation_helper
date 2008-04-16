@@ -12,12 +12,12 @@ You get two methods with this plugin:
 
 h2. Configuration Options:
 
-* @authorize@ - specifies which of the sections require authorization before showing up
+* @authorize => [:links]@ - specifies which of the sections require authorization before showing up
 ** note: use @:authorize => [:all]@ to do all links at once (i.e. for an "admin" menu)
-* @with@ - specifies the method to use to authorize against (defaults to @logged_in?@ method)
+* @with => :authorization_method@ - specifies the method to use to authorize against (defaults to @logged_in?@ method)
 ** note - requires the @authorize@ option to actually work
-* @hover_text@ - specifies to use the subtitles as hovertext instead of showing up as span's under the links
-* @authorized_css@ - specifies the css class that goes on all authorized tabs (defaults to 'authorized_nav_link')
+* @hover_text => (true|false)@ - specifies to use the subtitles as hovertext instead of showing up as span's under the links
+* @authorized_css => 'custom_css_class'@ - specifies the css class that goes on all authorized tabs (defaults to 'authorized_nav_link')
 
 h2. Get it at GitHub
 
@@ -221,4 +221,4 @@ will match the current tab up against @:home@ instead of @:public@.
 
 h2. License
 
-Copyright (c) 2008 Ryan Heath (http://rpheath.com), released under the MIT license
+Copyright (c) 2008 Ryan Heath (http://rpheath.com), released under the mit license
