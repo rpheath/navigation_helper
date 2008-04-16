@@ -17,13 +17,11 @@ h2. Configuration Options:
 * @with@ - specifies the method to use to authorize against (defaults to @logged_in?@ method)
 ** note - requires the @authorize@ option to actually work
 * @hover_text@ - specifies to use the subtitles as hovertext instead of showing up as span's under the links
-* @authorized_css@ - specifies the CSS class that goes on all authorized tabs (defaults to 'authorized_nav_link')
+* @authorized_css@ - specifies the css class that goes on all authorized tabs (defaults to 'authorized_nav_link')
 
 h2. Get it at GitHub
 
-<pre><code>
-  git clone git://github.com/rpheath/navigation_helper.git
-</code></pre>
+<pre><code>git clone git://github.com/rpheath/navigation_helper.git</code></pre>
 
 h2. Assumptions (er, Conventions)
 
@@ -69,7 +67,7 @@ One thing to make note of is each symbolized link you pass to the navigation hel
 </code></pre>
 
 And by default, an "underscored" link will result in capitalized words. So @:contact_me@ would
-result in 'Contact Me' link text. If you wish to have all lowercase or all uppercase, just use CSS to do that.
+result in 'Contact Me' link text. If you wish to have all lowercase or all uppercase, just use css to do that.
 
 The examples below provide some help on how to use this plugin.
 
@@ -81,9 +79,7 @@ h3. Example 1
 
 The most basic usage...
 
-<pre><code>
-  navigation [:home, :about, :contact]
-</code></pre>
+<pre><code>navigation [:home, :about, :contact]</code></pre>
 
 ...which will render...
 
@@ -95,15 +91,13 @@ The most basic usage...
   </ul>
 </code></pre>
 
-The above example assumes that the user is actually on the home page (hence the "current" CSS class on the Home list item).
+The above example assumes that the user is actually on the home page (hence the "current" css class on the Home list item).
 
 h3. Example 2
 
 Sometimes you need tabs to show up only based on some condition (such as a user being logged in). Picture a blog application. A Blog may have public tabs (such as Home, About, etc), but a logged in admin may want another tab to easily get to the admin interface. You can specify this behavior in the navigation helper by passing an array of links to the @:authorize@ option...
 
-<pre></code>
-  navigation [:home, :about, :contact, :admin], :authorize => [:admin]
-</code></pre>
+<pre></code>navigation [:home, :about, :contact, :admin], :authorize => [:admin]</code></pre>
 
 Now, based on that setup, the "Admin" tab will require authorization before showing up.
 
@@ -114,27 +108,21 @@ h3. Example 3
 By default, this plugin will check against a @logged_in?@ method to ensure an authorized user. However, if you already have a custom method you're using to limit access and don't want to call it
 @logged_in?@ (or maybe you need to check against a certain role), you can specify that by passing the method to use using the @:with@ option:
 
-<pre><code>
-  navigation [:home, :about, :contact, :admin], :authorize => [:admin], :with => :authorize_first
-</code></pre>
+<pre><code>navigation [:home, :about, :contact, :admin], :authorize => [:admin], :with => :authorize_first</code></pre>
 
 Now the plugin will check against an @authorize_first@ method instead of @logged_in?@.
 
 Just for completeness, you can specify multiple links to be "authorized".
 
-<pre><code>
-  navigation [:home, :about, :users, :reports], :authorize => [:users, :reports]
-</code></pre>
+<pre><code>navigation [:home, :about, :users, :reports], :authorize => [:users, :reports]</code></pre>
 
-Also worth noting, each "authorized link" will have a default CSS class. A lot of the time, I want my "authorized" tabs to be positioned to the right of the screen, while my regular tabs are to the left, which is why I've added the CSS class. Also, this CSS class can be overriden using the @:authorized_css@ option (defaults to 'authorized_nav_link').
+Also worth noting, each "authorized link" will have a default css class. A lot of the time, I want my "authorized" tabs to be positioned to the right of the screen, while my regular tabs are to the left, which is why I've added the css class. Also, this css class can be overriden using the @:authorized_css@ option (defaults to 'authorized_nav_link').
 
 h3. Example 4
 
 Now, let's say you want to use the navigation helper for an entire section of admin links, maybe to show up in an admin sidebar or something. Well, we don't want to have to repeat all of those links in the @:authorize@ option, so you can pass a single value of @:all@ to show/hide the entire menu based on an authorized method:
 
-<pre><code>
-  navigation [:dashboard, :users, :reports], :authorize => [:all]
-</code></pre>
+<pre><code>navigation [:dashboard, :users, :reports], :authorize => [:all]</code></pre>
 
 Again, by default that will look for a @logged_in?@ method, but you can override
 that by passing your own (as shown above) using the @:with@ option. The navigation 
@@ -142,11 +130,24 @@ helper will return nothing if the authorization doesn't pass.
 
 h3. Example 5
 
-Now, sometimes I want to place a subtitle under my links. Maybe a brief description or something. This plugin also supports that by passing the link followed by its subtitle, like so:
+Just a quick example of how to add custom css for authorized links:
+
+<pre><code>navigation [:about, :admin], :authorize => [:admin], :authorized_css => 'admin'</code></pre>
+
+This would render (assuming admin tab is the current)...
 
 <pre><code>
-  navigation [:home, 'Start Here', :about, 'Learn More']
+  <ul class="nav_bar">
+    <li><a href="/about">About</a></li>
+    <li class="current admin"><a href="/admin">Admin</a></li>
+  </ul>
 </code></pre>
+
+h3. Example 6
+
+Now, sometimes I want to place a subtitle under my links. Maybe a brief description or something. This plugin also supports that by passing the link followed by its subtitle, like so:
+
+<pre><code>navigation [:home, 'Start Here', :about, 'Learn More']</code></pre>
 
 This would render:
 
@@ -163,15 +164,13 @@ This would render:
   </ul>
 </code></pre>
 
-The CSS is up to you, but the markup is definitely flexible enough for some nice handywork.
+The css is up to you, but the markup is definitely flexible enough for some nice handywork.
 
-h3. Example 6
+h3. Example 7
 
 Maybe you want your subtitles to be a little less obtrusive and not actually show up as markup. By setting the @:hover_text@ option to @true@, the subtitles will then become hover text on the links instead. Redoing the above example with hover text, we get:
 
-<pre><code>
-  navigation [:home, 'Start Here', :about, 'Learn More'], :hover_text => true
-</code></pre>
+<pre><code>navigation [:home, 'Start Here', :about, 'Learn More'], :hover_text => true</code></pre>
 
 Notice the @:hover_text => true@ option. This would render...
 
@@ -188,7 +187,7 @@ Notice the @:hover_text => true@ option. This would render...
 
 The span's get replaced with link title's instead.	
 
-h3. Example 7
+h3. Example 8
 
 By default this plugin will use the name of the current controller to determine the current tab. But what if you don't want to name your controllers in the context of your navigation, and vice versa (which is a very practical need)? No problem.
 
@@ -207,9 +206,7 @@ Let's say you have the following controllers:
 
 And you wanted your navigation links to be setup like so:
 
-<pre><code>
-  <%= navigation [:home, :about, :contact] -%>
-</code></pre>
+<pre><code><%= navigation [:home, :about, :contact] -%></code></pre>
 
 According to how the @navigation@ helper works, you would have to replace @:home@ with @:public@. But that would be confusing. This is where the current_tab method comes into play. Just do this to associate a controller with a tab:
 
