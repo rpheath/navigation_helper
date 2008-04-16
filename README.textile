@@ -5,7 +5,8 @@ Web applications always use navigation. And the majority of the apps built enjoy
 You get two methods with this plugin:
 
 * @navigation(sections, options={})@ - this is the helper method that is used in your views
-** @sections@ - a :symbol array of sections (must map to named routes)
+** @sections@ - a :symbol array of sections (i.e. [:home, :about, :contact])
+*** note: each section must map to a named route (see below in "Assumptions" for more details)
 ** @options@ - used to override default behavior
 * @current_tab(name)@ - used in any controller to override the current tab for that controller
 ** @name@ - must be a symbol matching the symbol passed in the @navigation@ helper
@@ -15,7 +16,7 @@ h2. Configuration Options:
 * @authorize => [:links]@ - specifies which of the sections require authorization before showing up
 ** note: use @:authorize => [:all]@ to do all links at once (i.e. for an "admin" menu)
 * @with => :authorization_method@ - specifies the method to use to authorize against (defaults to @logged_in?@ method)
-** note - requires the @authorize@ option to actually work
+** note: requires the @authorize@ option to actually work
 * @hover_text => (true|false)@ - specifies to use the subtitles as hovertext instead of showing up as span's under the links
 * @authorized_css => 'custom_css_class'@ - specifies the css class that goes on all authorized tabs (defaults to 'authorized_nav_link')
 
