@@ -21,6 +21,11 @@ current tab. But sometimes that's not always feasible, which is where
 the <tt>current_tab</tt> method comes into play (see Example 7). The plugin also provides
 a means to add hover text and subtitles to the links, if need be.
 
+== Get it at GitHub
+This repository is public on GitHub:
+
+  git clone git://github.com/rpheath/navigation_helper.git
+
 == Assumptions (er, Conventions)
 
 === Use Symbols for Sections

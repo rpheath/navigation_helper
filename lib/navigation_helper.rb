@@ -3,20 +3,31 @@
 # the current tab or section, and returns an unordered list of links for easy
 # styling in CSS.
 # 
+# == Get it at GitHub
+# This repository is public on GitHub:
+#
+#  git clone git://github.com/rpheath/navigation_helper.git
+#
 # == Examples
 # see the README for more details and a full list of example usage
 module NavigationHelper
   SUBTITLES = {}
 	
-  module Errors
-    class InvalidSections < RuntimeError 
-      def message; "#{self.class}: Must pass an array of sections"; end
+  module Error
+    class CustomError < RuntimeError
+      # getter/setter for setting custom error messages
+  	  def self.message(msg=nil);  msg.nil? ? @message : self.message = msg; end
+  	  def self.message=(msg);     @message = msg;                           end
     end
-    class InvalidArrayCount < RuntimeError
-      def message; "#{self.class}: If using subtitles, must have 1-1 match for each section/subtitle (note: use '' if a subtitle is blank)"; end
+    
+    class InvalidSections < CustomError 
+      message "#{self.to_s}: Must pass an array of sections"
     end
-    class InvalidType < RuntimeError
-      def message; "#{self.class}: Must use symbols for sections, not strings (only use strings for subtitles)"; end
+    class InvalidArrayCount < CustomError
+      message "#{self.to_s}: If using subtitles, must have 1-1 match for each section/subtitle (note: use '' if a subtitle is blank)"
+    end
+    class InvalidType < CustomError
+      message "#{self.to_s}: Must use symbols for sections, not strings (only use strings for subtitles)"
     end
   end
 	
@@ -25,12 +36,12 @@ module NavigationHelper
   # If you need to extend the functionality, add methods to the Navigation class as
   # the navigation helper generates a new instance of this class
   class Navigation	
-    include Errors
+    include Error
   
     def initialize(sections, options)
       @sections = sections
       @options = options
-      validate_sections
+      validate_sections!
       fill_subtitles if has_subtitles?
     end
 		
@@ -75,8 +86,14 @@ module NavigationHelper
       end
       authorize_all?(methods) ? sections : methods
     end
-		
-    private
+    
+    # returns the additional CSS class to be set on all authorized links
+    def authorized_css
+      return '' if methods_to_authorize.blank?
+      @options[:authorized_css] ||= 'authorized_nav_link'
+    end
+    
+    protected
       # distinguishes between sections and subtitles, returning sections
       def parse(sections)
         temp = []
@@ -85,7 +102,17 @@ module NavigationHelper
         end
         temp
       end
-		  
+      
+      # ensures that the links passed in are valid
+      def validate_sections!
+        raise(InvalidSections, InvalidSections.message) unless sections_is_an_array?
+        if has_subtitles?
+          raise(InvalidArrayCount, InvalidArrayCount.message) unless one_to_one_match_for_sections_and_subtitles?
+        end
+        raise(InvalidType, InvalidType.message) unless valid_types?
+      end
+      
+    private      
       # loads the SUBTITLES constant with key/value relationships for section/subtitle
       def fill_subtitles
         @sections.in_groups_of(2) { |group| SUBTITLES[group[0]] = group[1] }
@@ -103,14 +130,6 @@ module NavigationHelper
       def authorize_all?(methods)
         return false if methods.blank?
         methods.size == 1 && methods[0] == :all
-      end
-
-      def validate_sections
-        raise(InvalidSections, InvalidSections.new.message) unless sections_is_an_array?
-        if has_subtitles?
-          raise(InvalidArrayCount, InvalidArrayCount.new.message) unless one_to_one_match_for_sections_and_subtitles?
-        end
-        raise(InvalidType, InvalidType.new.message) unless valid_types?
       end
       
       def sections_is_an_array?
@@ -154,11 +173,11 @@ module NavigationHelper
       items = []
       navigation.sections.each do |link|
         current_tab = controller.class.instance_variable_get("@current_tab") || controller.controller_name.to_sym
-        css = (link == current_tab ? 'current' : '')
+        css = (link == current_tab ? 'current' : nil)
         if navigation.methods_to_authorize.include?(link)
-          items << content_tag(:li, construct(navigation, link), :class => css + ' authorized_nav_link') if authorized?(navigation)
+          items << content_tag(:li, construct(navigation, link), :class => [css, navigation.authorized_css].compact.join(' ')) if authorized?(navigation)
         else
-          items << content_tag(:li, construct(navigation, link), :class => css)
+          items << content_tag(:li, construct(navigation, link), :class => css.to_s)
         end
       end	
       items.blank? ? '' : content_tag(:ul, items, :class => 'nav_bar')
