@@ -20,9 +20,11 @@ h2. Configuration Options:
 * @hover_text => (true|false)@ - specifies to use the subtitles as hovertext instead of showing up as span's under the links
 * @authorized_css => 'custom_css_class'@ - specifies the css class that goes on all authorized tabs (defaults to 'authorized_nav_link')
 
-h2. Get it at GitHub
+h2. Installation: Get it at GitHub
 
-<pre><code>git clone git://github.com/rpheath/navigation_helper.git</code></pre>
+You can install this as a plugin. Navigation to your project root and type:
+
+<pre><code>git clone git://github.com/rpheath/navigation_helper.git vendor/plugins/navigation_helper</code></pre>
 
 h2. Assumptions (er, Conventions)
 
