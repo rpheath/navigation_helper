@@ -5,7 +5,7 @@ Web applications always use navigation. And the majority of the apps built enjoy
 You get two methods with this plugin:
 
 * @navigation(sections, options={})@ - this is the helper method that is used in your views
-** @sections@ - a :symbol array of sections (i.e. [:home, :about, :contact])
+** @sections@ - a :symbol array of sections (i.e. @[:home, :about, :contact]@)
 *** note: each section must map to a named route (see below in "Assumptions" for more details)
 ** @options@ - used to override default behavior
 * @current_tab(name)@ - used in any controller to override the current tab for that controller
