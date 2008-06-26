@@ -175,7 +175,7 @@ module NavigationHelper
         current_tab = controller.class.instance_variable_get("@current_tab") || controller.controller_name.to_sym
         css = (link == current_tab ? 'current' : nil)
         if navigation.methods_to_authorize.include?(link)
-          items << content_tag(:li, construct(navigation, link), :class => [css, navigation.authorized_css].compact.join(' ')) if authorized?(navigation)
+          items << content_tag(:li, construct(navigation, link), :class => [css, navigation.authorized_css].compact.join(' ')) if allowed?(navigation)
         else
           items << content_tag(:li, construct(navigation, link), :class => css.to_s)
         end
@@ -200,7 +200,7 @@ module NavigationHelper
   		
       # checks if the authorization method exists, and then checks
       # the boolean value it returns
-      def authorized?(navigation)
+      def allowed?(navigation)
         controller.respond_to?(navigation.authorization_method) && controller.send(navigation.authorization_method)
       end 
   end
