@@ -1,9 +1,9 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'active_support'
 
-describe "NavigationHelper Plugin: Navigation class" do
-  E = NavigationHelper::Error
-  N = NavigationHelper::Navigation
+describe "NavigationHelper Plugin: Navigator class" do
+  E = RPH::Navigation::Error
+  N = RPH::Navigation::Navigator
   
   module NavigationSpecHelper
     def nav_without_subtitles(options={})
@@ -86,8 +86,8 @@ describe "NavigationHelper Plugin: Navigation class" do
     
     describe "subtitles" do
       before(:each) do
-        @sub_titles = NavigationHelper::SUBTITLES
-        NavigationHelper::SUBTITLES.clear
+        @sub_titles = RPH::Navigation::SUBTITLES
+        RPH::Navigation::SUBTITLES.clear
       end
       
       it "should not want subtitles" do
