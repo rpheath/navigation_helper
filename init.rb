@@ -1,2 +1,7 @@
+require 'navigation'
+
 ActionView::Base.send :include, RPH::Navigation::InstanceMethods
-ActionController::Base.send :extend, RPH::Navigation::ClassMethods
+ActionController::Base.class_eval do
+  extend RPH::Navigation::ClassMethods
+  class_inheritable_accessor :_current_tab
+end
