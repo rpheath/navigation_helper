@@ -31,9 +31,7 @@ module RPH
 	
       # turns <tt>:contact_me</tt> into 'Contact Me'
       def text_for(link)
-        link.to_s.humanize.split.inject([]) do |words, word|
-          words << word.capitalize
-        end.join(' ')
+        link.to_s.titleize
       end
 	
       # returns the method used for checking if links are allowed to
