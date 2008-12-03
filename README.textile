@@ -24,7 +24,7 @@ h2. Installation: Get it at GitHub
 
 You can install this as a plugin. Navigation to your project root and type:
 
-<pre><code>git clone git://github.com/rpheath/navigation_helper.git vendor/plugins/navigation_helper</code></pre>
+<pre><code>script/plugin install git://github.com/rpheath/navigation_helper.git</code></pre>
 
 h2. Assumptions (er, Conventions)
 
@@ -32,12 +32,11 @@ h3. Use Symbols for Sections
 
 You cannot pass strings to the @navigation@ helper and expect it to work properly. Meaning:
 
-<pre><code>
-  # incorrect
-  navigation ['home','about','contact_me']
+<pre><code># incorrect
+<%= navigation ['home','about','contact_me'] %>
 
-  # correct
-  navigation [:home, :about, :contact_me]
+# correct
+<%= navigation [:home, :about, :contact_me] %>
 </code></pre>
 
 This is because of the subtitles. The plugin understands strings and symbols differently, so just make
@@ -47,30 +46,38 @@ h3. Subtitles Must Follow Respective Section
 
 If you choose to use subtitles, just make sure you keep them "grouped" together in their respective pairs.
 
-<pre><code>
-  navigation([
-    :home,    'Start Here',
-    :about,   'Learn More',
-    :contact, 'Get In Touch'
-  ])
+<pre><code><%= navigation([
+  :home,    'Start Here',
+  :about,   'Learn More',
+  :contact, 'Get In Touch'
+]) %>
 </code></pre>
 
 h3. Named Routes matching Sections
 
-One thing to make note of is each symbolized link you pass to the navigation helper, it is expected that a matched named route exist. For instance:
+One thing to make note of is each symbolized link you pass to the navigation helper, it is expected that a matched named route exist 
+(unless you're using custom routes - see below). For instance:
 
-<pre><code>
-  # calling this
-  navigation [:home, :about, :contact_me]
+<pre><code># calling this
+<%= navigation [:home, :about, :contact_me] %>
 
-  # would expect these named routes to exist
-  home_path
-  about_path
-  contact_me_path
+# would expect these named routes to exist
+home_path
+about_path
+contact_me_path
 </code></pre>
 
 And by default, an "underscored" link will result in capitalized words. So @:contact_me@ would
 result in 'Contact Me' link text. If you wish to have all lowercase or all uppercase, just use css to do that.
+
+h3. Custom Routes
+
+If you need to deviate from the RESTful routes and break from consistency, you can. To set a custom route for one of your tabs, just pass a
+key/value pair in place of the section, like so:
+
+<pre><code><%= navigation [{:home => some_custom_path}, :about, :contact] %></code></pre>
+
+Now your 'Home' tab will go to some_custom_path instead of home_path.
 
 The examples below provide some help on how to use this plugin.
 
@@ -82,25 +89,37 @@ h3. Example 1
 
 The most basic usage...
 
-<pre><code>navigation [:home, :about, :contact]</code></pre>
+<pre><code><%= navigation [:home, :about, :contact] %></code></pre>
 
 ...which will render...
 
-<pre><code>
-  <ul class="nav_bar">
-    <li class="current"><a href="/home">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li><a href="/contact">Contact</a></li>
-  </ul>
+<pre><code><ul class="navigation">
+  <li class="current"><a href="/home">Home</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/contact">Contact</a></li>
+</ul>
 </code></pre>
 
 The above example assumes that the user is actually on the home page (hence the "current" css class on the Home list item).
+
+h3. Example 1a (custom routes)
+
+<pre><code><%= navigation [{:home => some_custom_path}, :about, :contact] %></code></pre>
+
+...which will render...
+
+<pre><code><ul class="navigation">
+  <li class="current"><a href="/some/custom/path">Home</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/contact">Contact</a></li>
+</ul>
+</code></pre>
 
 h3. Example 2
 
 Sometimes you need tabs to show up only based on some condition (such as a user being logged in). Picture a blog application. A Blog may have public tabs (such as Home, About, etc), but a logged in admin may want another tab to easily get to the admin interface. You can specify this behavior in the navigation helper by passing an array of links to the @:authorize@ option...
 
-<pre></code>navigation [:home, :about, :contact, :admin], :authorize => [:admin]</code></pre>
+<pre></code><%= navigation [:home, :about, :contact, :admin], :authorize => [:admin] %></code></pre>
 
 Now, based on that setup, the "Admin" tab will require authorization before showing up.
 
@@ -111,13 +130,13 @@ h3. Example 3
 By default, this plugin will check against a @logged_in?@ method to ensure an authorized user. However, if you already have a custom method you're using to limit access and don't want to call it
 @logged_in?@ (or maybe you need to check against a certain role), you can specify that by passing the method to use using the @:with@ option:
 
-<pre><code>navigation [:home, :about, :contact, :admin], :authorize => [:admin], :with => :authorize_first</code></pre>
+<pre><code><%= navigation [:home, :about, :contact, :admin], :authorize => [:admin], :with => :authorize_first %></code></pre>
 
 Now the plugin will check against an @authorize_first@ method instead of @logged_in?@.
 
 Just for completeness, you can specify multiple links to be "authorized".
 
-<pre><code>navigation [:home, :about, :users, :reports], :authorize => [:users, :reports]</code></pre>
+<pre><code><%= navigation [:home, :about, :users, :reports], :authorize => [:users, :reports] %></code></pre>
 
 Also worth noting, each "authorized link" will have a default css class. A lot of the time, I want my "authorized" tabs to be positioned to the right of the screen, while my regular tabs are to the left, which is why I've added the css class. Also, this css class can be overriden using the @:authorized_css@ option (defaults to 'authorized_nav_link').
 
@@ -125,7 +144,7 @@ h3. Example 4
 
 Now, let's say you want to use the navigation helper for an entire section of admin links, maybe to show up in an admin sidebar or something. Well, we don't want to have to repeat all of those links in the @:authorize@ option, so you can pass a single value of @:all@ to show/hide the entire menu based on an authorized method:
 
-<pre><code>navigation [:dashboard, :users, :reports], :authorize => [:all]</code></pre>
+<pre><code><%= navigation [:dashboard, :users, :reports], :authorize => [:all] %></code></pre>
 
 Again, by default that will look for a @logged_in?@ method, but you can override
 that by passing your own (as shown above) using the @:with@ option. The navigation 
@@ -135,36 +154,34 @@ h3. Example 5
 
 Just a quick example of how to add custom css for authorized links:
 
-<pre><code>navigation [:about, :admin], :authorize => [:admin], :authorized_css => 'admin'</code></pre>
+<pre><code><%= navigation [:about, :admin], :authorize => [:admin], :authorized_css => 'admin' %></code></pre>
 
 This would render (assuming admin tab is the current)...
 
-<pre><code>
-  <ul class="nav_bar">
-    <li><a href="/about">About</a></li>
-    <li class="current admin"><a href="/admin">Admin</a></li>
-  </ul>
+<pre><code><ul class="navigation">
+  <li><a href="/about">About</a></li>
+  <li class="current admin"><a href="/admin">Admin</a></li>
+</ul>
 </code></pre>
 
 h3. Example 6
 
 Now, sometimes I want to place a subtitle under my links. Maybe a brief description or something. This plugin also supports that by passing the link followed by its subtitle, like so:
 
-<pre><code>navigation [:home, 'Start Here', :about, 'Learn More']</code></pre>
+<pre><code><%= navigation [:home, 'Start Here', :about, 'Learn More'] %></code></pre>
 
 This would render:
 
-<pre><code>
-  <ul class="nav_bar">
-    <li class="current">
-      <a href="/home">Home</a>
-      <span>Start Here</span>
-    </li>
-    <li>
-      <a href="/about">About</a>
-      <span>Learn More</span>
-    </li>
-  </ul>
+<pre><code><ul class="navigation">
+  <li class="current">
+    <a href="/home">Home</a>
+    <span>Start Here</span>
+  </li>
+  <li>
+    <a href="/about">About</a>
+    <span>Learn More</span>
+  </li>
+</ul>
 </code></pre>
 
 The css is up to you, but the markup is definitely flexible enough for some nice handywork.
@@ -173,19 +190,18 @@ h3. Example 7
 
 Maybe you want your subtitles to be a little less obtrusive and not actually show up as markup. By setting the @:hover_text@ option to @true@, the subtitles will then become hover text on the links instead. Redoing the above example with hover text, we get:
 
-<pre><code>navigation [:home, 'Start Here', :about, 'Learn More'], :hover_text => true</code></pre>
+<pre><code><%= navigation [:home, 'Start Here', :about, 'Learn More'], :hover_text => true %></code></pre>
 
 Notice the @:hover_text => true@ option. This would render...
 
-<pre><code>
-  <ul class="nav_bar">
-    <li class="current">
-      <a href="/home" title="Start Here">Home</a>
-    </li>
-    <li>
-      <a href="/about" title="Learn More">About</a>
-    </li>
-  </ul>
+<pre><code><ul class="navigation">
+  <li class="current">
+    <a href="/home" title="Start Here">Home</a>
+  </li>
+  <li>
+    <a href="/about" title="Learn More">About</a>
+  </li>
+</ul>
 </code></pre>
 
 The span's get replaced with link title's instead.	
@@ -197,26 +213,26 @@ By default this plugin will use the name of the current controller to determine 
 Let's say you have the following controllers:
 
 <pre><code>
-  def PublicController < ApplicationController
-  end
-	
-  def AboutController < ApplicationController
-  end
-	
-  def ContactController < ApplicationController
-  end
+def PublicController < ApplicationController
+end
+
+def AboutController < ApplicationController
+end
+
+def ContactController < ApplicationController
+end
 </code></pre>
 
 And you wanted your navigation links to be setup like so:
 
-<pre><code><%= navigation [:home, :about, :contact] -%></code></pre>
+<pre><code><%= navigation [:home, :about, :contact] %></code></pre>
 
 According to how the @navigation@ helper works, you would have to replace @:home@ with @:public@. But that would be confusing. This is where the current_tab method comes into play. Just do this to associate a controller with a tab:
 
 <pre><code>
-  def PublicController < ApplicationController
-    current_tab :home
-  end
+def PublicController < ApplicationController
+  current_tab :home
+end
 </code></pre>
 
 And you're set. Now whenever you're on any action within the PublicController, the navigation helper
