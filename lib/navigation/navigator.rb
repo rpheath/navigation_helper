@@ -8,21 +8,44 @@ module RPH
       include Error
       
       def initialize(sections, options)
-        @sections = sections
-        @options = options
+        @sections, @options = sections, options
+
         validate_sections!
-        fill_subtitles if has_subtitles?
+        update_routes! if has_custom_routes?
+        fill_subtitles! if has_subtitles?
       end
       
     private      
       # loads the SUBTITLES constant with key/value relationships for section/subtitle
-      def fill_subtitles
+      def fill_subtitles!
         @sections.in_groups_of(2) { |group| SUBTITLES[group.first] = group.last }
       end
-	
-      # assumed that if all items are symbols, subtitles are not present
+	    
+      # assumes that if any of the items are strings, subtitles are present
       def has_subtitles?
-        !@sections.all? { |section| section.is_a?(Symbol) }
+        @sections.any? { |section| section.is_a?(String) }
+      end
+      
+      # updates the ROUTES hash with the user-defined route
+      def update_routes!
+        @sections.each_with_index do |section, index|
+          next unless section.is_a?(Hash)
+          
+          # make sense of the key/value pair
+          tab, route = section.keys.first, section.values.first
+          
+          # set the custom route
+          ROUTES[tab] = route
+          
+          # ensure that @sections doesn't gets rid of that hash
+          # (we don't need it anymore)
+          @sections[index] = tab
+        end
+      end
+      
+      # assumes that if any item is a Hash, it must have a custom route
+      def has_custom_routes?
+        @sections.any? { |section| section.is_a?(Hash) }
       end
 			
       def requires_authorization?
@@ -49,11 +72,11 @@ module RPH
 	  protected
 	    # distinguishes between sections and subtitles, returning sections
       def parse(sections)
-        temp = []
-        sections.each_with_index do |section, index|
-          temp << section if section.is_a?(Symbol) && index.even?
+        returning(temp = []) do
+          sections.each_with_index do |section, index|
+            temp << section if section.is_a?(Symbol) && index.even?
+          end
         end
-        temp
       end
   
       # ensures that the links passed in are valid

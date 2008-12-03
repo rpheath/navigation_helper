@@ -15,7 +15,7 @@ end
 # see the README for more details and a full list of example usage
 module RPH
   module Navigation
-    SUBTITLES = {}
+    SUBTITLES, ROUTES = {}, {}
     
     # InstanceMethods will be mixed in with ActionView::Base which will
     # make the navigation helper available to any view
@@ -54,20 +54,18 @@ module RPH
         end
         
         return '' if items.blank?
-        content_tag(:ul, items, :class => 'nav_bar')
+        content_tag(:ul, items, :class => 'navigation')
       end
-
+      
       private
       # builds the actual link and determines if subtitles are present
       def construct(nav, section)
         text = nav.text_for(section)
-        link = link_to(text, send("#{section.to_s.downcase}_path"))
+        path = ROUTES[section.to_sym] || send("#{section.to_s.downcase}_path")
+        link = link_to(text, path)
 
-        if nav.wants_hover_text?
-          link = link_to(text, send("#{section.to_s.downcase}_path"), :title => SUBTITLES[section])
-        elsif nav.wants_subtitles?
-          link += content_tag(:span, SUBTITLES[section])
-        end
+        link = link_to(text, path, :title => SUBTITLES[section]) if nav.wants_hover_text?
+        link += content_tag(:span, SUBTITLES[section]) if nav.wants_subtitles?
 
         link
       end

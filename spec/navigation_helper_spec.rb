@@ -13,11 +13,16 @@ describe "NavigationHelper Plugin: Navigator class" do
     def nav_with_subtitles(options={})
       N.new(@subtitle_links, options)
     end
+    
+    def nav_with_custom_routes(options={})
+      N.new(@custom_route_links, options)
+    end
   end
       
   before(:each) do
     @links = [:one, :two, :three]
     @subtitle_links = [:one, 'one', :two, 'two', :three, 'three']
+    @custom_route_links = [{:one => '/some/where'}, :two, :three]
   end
   
   describe "errors" do
@@ -53,10 +58,11 @@ describe "NavigationHelper Plugin: Navigator class" do
     before(:each) do
       @navigation = nav_without_subtitles
       @subtitle_navigation = nav_with_subtitles
+      @custom_route_navigation = nav_with_custom_routes
     end
     
     it "should be an instance of NavigationHelper::Navigation" do
-      [@navigation, @subtitle_navigation].each do |nav|
+      [@navigation, @subtitle_navigation, @custom_route_navigation].each do |nav|
         nav.should be_an_instance_of(N)
       end
     end
