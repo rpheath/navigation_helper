@@ -89,7 +89,7 @@ module RPH
       #   end
       def current_tab(tab=nil)        
         self._current_tab = tab if tab
-        self._current_tab ||= self.to_s.sub('Controller', '').downcase.to_sym
+        self._current_tab ||= self.to_s.sub('Controller', '').underscore.to_sym
       end
     end
   end
